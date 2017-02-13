@@ -3,18 +3,17 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.cross_validation import KFold
 
-def linearRegression(titanic):
+def linearRegression(titanic, predictors):
     alg = LinearRegression()
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title"]
     kf = KFold(titanic.shape[0], n_folds=3, random_state=1)
     predictions = []
     for train, test in kf:
-        print test
+        #print test
         train_predictors = (titanic[predictors].iloc[train, :])
         train_target = titanic["Survived"].iloc[train]
         alg.fit(train_predictors, train_target)
         test_predictions = alg.predict(titanic[predictors].iloc[test, :])
-        print titanic[predictors].iloc[test, :]
+        #print titanic[predictors].iloc[test, :]
         predictions.append(test_predictions)
     return predictions, alg
 
@@ -50,7 +49,7 @@ def getBestThresholdValue(titanic, linearPredictionsOnTrain):
             maxAccuracy = accuracy
             maxThreshold = threshold
         threshold = i / 100.00
-    return maxThreshold
+    return maxThreshold, maxAccuracy
 
 def pPrint(data):
     for i in data:
@@ -59,14 +58,34 @@ def pPrint(data):
 def splitTitle(titanic):
     names = titanic["Name"]
     titles = [name.split(",")[1].split(".")[0].strip() for name in names]
-    pPrint(titles)
+    #pPrint(titles)
     titanic["Title"] = titles
-    print titanic["Embarked"].unique()
+    #print titanic["Embarked"].unique()
     counts = titanic["Title"].value_counts().index.values
     for i in range(len(counts)):
         titanic.loc[titanic["Title"] == counts[i], "Title"] = i
     titanic["Title"] = titanic["Title"].fillna(0)
     return titanic
+
+def testOnDataSet(alg, maxThreshold, predictors):
+    titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
+    titanicTest = CleaningUpCode(titanicTest)
+    titanicTest = splitTitle(titanicTest)
+    predictions = alg.predict(titanicTest[predictors])
+    # print titanicTest[predictors].isnull().any()
+
+    predictions[predictions > maxThreshold] = 1
+    predictions[predictions <= maxThreshold] = 0
+    # print len(predictions)
+    predictions = list(predictions)
+    ids = range(892, 892 + len(predictions) + 1)
+    res = list(zip(ids, predictions))
+    # print res
+    df = pandas.DataFrame(data=res, columns=["PassengerId", "Survived"])
+    df["Survived"] = df["Survived"].astype(int)
+    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression1.csv", index_label=False,
+              index=False)
+    return
 
 def main():
     titanic = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\train.csv")
@@ -74,30 +93,16 @@ def main():
 
     titanic = splitTitle(titanic)
 
-    #print titanic.describe()
+    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
 
-    linearPredictionsOnTrain, alg = linearRegression(titanic)
+    linearPredictionsOnTrain, alg = linearRegression(titanic, predictors)
 
-    maxThreshold = getBestThresholdValue(titanic, linearPredictionsOnTrain)
-    print maxThreshold
+    maxThreshold, maxAccuracy = getBestThresholdValue(titanic, linearPredictionsOnTrain)
 
-    titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
-    titanicTest = CleaningUpCode(titanicTest)
-    titanicTest = splitTitle(titanicTest)
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title"]
-    predictions = alg.predict(titanicTest[predictors])
-    #print titanicTest[predictors].isnull().any()
+    print maxThreshold, maxAccuracy
 
-    predictions[predictions > maxThreshold] = 1
-    predictions[predictions <= maxThreshold] = 0
-    print len(predictions)
-    predictions = list(predictions)
-    ids = range(892, 892 + len(predictions) + 1)
-    res = list(zip(ids, predictions))
-    #print res
-    df = pandas.DataFrame(data=res, columns=["PassengerId", "Survived"])
-    df["Survived"] = df["Survived"].astype(int)
-    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression1.csv", index_label=False, index=False)
+    testOnDataSet(alg, maxThreshold, predictors)
+
     return
 
 if __name__ == "__main__":
