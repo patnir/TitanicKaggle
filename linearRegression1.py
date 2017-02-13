@@ -5,7 +5,7 @@ from sklearn.cross_validation import KFold
 
 def linearRegression(titanic):
     alg = LinearRegression()
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked"]
+    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title"]
     kf = KFold(titanic.shape[0], n_folds=3, random_state=1)
     predictions = []
     for train, test in kf:
@@ -76,14 +76,15 @@ def main():
 
     #print titanic.describe()
 
-    '''linearPredictionsOnTrain, alg = linearRegression(titanic)
+    linearPredictionsOnTrain, alg = linearRegression(titanic)
 
     maxThreshold = getBestThresholdValue(titanic, linearPredictionsOnTrain)
     print maxThreshold
 
     titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
     titanicTest = CleaningUpCode(titanicTest)
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked"]
+    titanicTest = splitTitle(titanicTest)
+    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title"]
     predictions = alg.predict(titanicTest[predictors])
     #print titanicTest[predictors].isnull().any()
 
@@ -93,10 +94,10 @@ def main():
     predictions = list(predictions)
     ids = range(892, 892 + len(predictions) + 1)
     res = list(zip(ids, predictions))
-    print res
+    #print res
     df = pandas.DataFrame(data=res, columns=["PassengerId", "Survived"])
     df["Survived"] = df["Survived"].astype(int)
-    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression1.csv", index_label=False, index=False)'''
+    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression1.csv", index_label=False, index=False)
     return
 
 if __name__ == "__main__":
