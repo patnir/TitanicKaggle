@@ -58,12 +58,14 @@ def pPrint(data):
 
 def splitTitle(titanic):
     names = titanic["Name"]
-    #print names
     titles = [name.split(",")[1].split(".")[0].strip() for name in names]
     pPrint(titles)
     titanic["Title"] = titles
     print titanic["Embarked"].unique()
-    print titanic["Title"].unique()
+    counts = titanic["Title"].value_counts().index.values
+    for i in range(len(counts)):
+        titanic.loc[titanic["Title"] == counts[i], "Title"] = i
+    titanic["Title"] = titanic["Title"].fillna(0)
     return titanic
 
 def main():
