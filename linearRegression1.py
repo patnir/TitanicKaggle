@@ -52,11 +52,29 @@ def getBestThresholdValue(titanic, linearPredictionsOnTrain):
         threshold = i / 100.00
     return maxThreshold
 
+def pPrint(data):
+    for i in data:
+        print i
+
+def splitTitle(titanic):
+    names = titanic["Name"]
+    #print names
+    titles = [name.split(",")[1].split(".")[0].strip() for name in names]
+    pPrint(titles)
+    titanic["Title"] = titles
+    print titanic["Embarked"].unique()
+    print titanic["Title"].unique()
+    return titanic
+
 def main():
     titanic = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\train.csv")
     titanic = CleaningUpCode(titanic)
 
-    linearPredictionsOnTrain, alg = linearRegression(titanic)
+    titanic = splitTitle(titanic)
+
+    #print titanic.describe()
+
+    '''linearPredictionsOnTrain, alg = linearRegression(titanic)
 
     maxThreshold = getBestThresholdValue(titanic, linearPredictionsOnTrain)
     print maxThreshold
@@ -76,7 +94,7 @@ def main():
     print res
     df = pandas.DataFrame(data=res, columns=["PassengerId", "Survived"])
     df["Survived"] = df["Survived"].astype(int)
-    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression1.csv", index_label=False, index=False)
+    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression1.csv", index_label=False, index=False)'''
     return
 
 if __name__ == "__main__":
