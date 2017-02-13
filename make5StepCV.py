@@ -2,7 +2,7 @@ import random
 
 def getDataMap():
     with open("train.csv") as f:
-        contents = f.readlines()[2:]
+        contents = f.readlines()[1:]
     dataMap = [line.strip().split(',') for line in contents]
     nDataMap = [[id,sv,c,fn[1:].strip(),ln.split('.')[0].strip(), ln.split('.')[1][:-1].strip(),s,a,ss,pg,t,f,ca,e] for id,sv,c,fn,ln,s,a,ss,pg,t,f,ca,e in dataMap]
     return nDataMap
@@ -13,10 +13,12 @@ def printMap(pMap):
 
 def separateData(data):
     r = [random.randint(0, 4) for i in range(len(data))]
+    a = [r.count(i) for i in range(0, 5)]
+    print a
     sData = [None] * 5
     for i in range(len(sData)):
         sData[i] = [[], []]
-    print sData
+    #print sData
     track = 0
     for i in r:
         for j in range(5):
@@ -36,7 +38,7 @@ def writeDataIntoFiles(data):
         for x in data[curr][0]:
             #f.write(x)
             s = ",".join(x)
-            print s
+            #print s
             s = s + "\n"
             f.write(s)
         file = director + "/test.csv"
@@ -45,7 +47,7 @@ def writeDataIntoFiles(data):
         f = open(file, "w+")
         for y in data[curr][1]:
             s = ",".join(y)
-            print s
+            #print s
             s = s + "\n"
             f.write(s)
         f.close()
@@ -53,7 +55,7 @@ def writeDataIntoFiles(data):
 
 def main():
     dataMap = getDataMap()
-    printMap(dataMap)
+    #printMap(dataMap)
     cvData = separateData(dataMap)
     #print cvData
     writeDataIntoFiles(cvData)
