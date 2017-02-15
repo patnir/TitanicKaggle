@@ -5,7 +5,7 @@ from sklearn.cross_validation import KFold
 
 def linearRegression(titanic, predictors):
     alg = LinearRegression()
-    kf = KFold(titanic.shape[0], n_folds=3, random_state=1)
+    kf = KFold(titanic.shape[0], n_folds=5, random_state=1)
     predictions = []
     for train, test in kf:
         #print test
@@ -94,7 +94,7 @@ def main():
     titanic = splitTitle(titanic)
 
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
-    predictors = ["Pclass", "Sex", "Age", "Title"]
+    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp"]
     linearPredictionsOnTrain, alg = linearRegression(titanic, predictors)
 
     maxThreshold, maxAccuracy = getBestThresholdValue(titanic, linearPredictionsOnTrain)
