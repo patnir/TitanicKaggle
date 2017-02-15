@@ -93,8 +93,8 @@ def main():
 
     titanic = splitTitle(titanic)
 
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
-
+    #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
+    predictors = ["Pclass", "Sex", "Age", "Title"]
     linearPredictionsOnTrain, alg = linearRegression(titanic, predictors)
 
     maxThreshold, maxAccuracy = getBestThresholdValue(titanic, linearPredictionsOnTrain)
