@@ -1,5 +1,4 @@
 import pandas
-import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn import cross_validation
 
@@ -35,13 +34,19 @@ def logistic_regression(titanic, predictors):
     return alg
 
 
+def test_on_data(alg, predictors):
+    titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
+    titanicTest = cleaning_up_data(titanicTest)
+    titanicTest = split_title(titanicTest)
+    return
+
 def main():
     titanic = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\train.csv")
     titanic = cleaning_up_data(titanic)
     titanic = split_title(titanic)
     predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
     alg = logistic_regression(titanic, predictors)
-
+    test_on_data(alg, predictors)
     return
 
 if __name__ == "__main__":
