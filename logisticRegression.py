@@ -1,6 +1,7 @@
 import pandas
 from sklearn.linear_model import LogisticRegression
-from sklearn import cross_validation
+from sklearn.cross_validation import KFold
+
 
 def cleaning_up_data(titanic):
     titanic["Age"] = titanic["Age"].fillna(titanic["Age"].median())
@@ -29,15 +30,39 @@ def split_title(titanic):
 
 def logistic_regression(titanic, predictors):
     alg = LogisticRegression(random_state=1)
-    scores = cross_validation.cross_val_score(alg, titanic[predictors], titanic["Survived"], cv=5)
-    print(scores.mean())
+    alg.fit(titanic[predictors], titanic["Survived"])
     return alg
 
+def logistic_regression_with_cv(titanic, predictors):
+    alg = LogisticRegression()
+    kf = KFold(titanic.shape[0], n_folds=5, random_state=1)
+    predictions = []
+    for train, test in kf:
+        # print test
+        train_predictors = (titanic[predictors].iloc[train, :])
+        train_target = titanic["Survived"].iloc[train]
+        alg.fit(train_predictors, train_target)
+        test_predictions = alg.predict(titanic[predictors].iloc[test, :])
+        # print titanic[predictors].iloc[test, :]
+        predictions.append(test_predictions)
+    return predictions, alg
 
-def test_on_data(alg, predictors):
+
+def predict_on_test_data(alg, predictors):
     titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
     titanicTest = cleaning_up_data(titanicTest)
     titanicTest = split_title(titanicTest)
+    predictions = alg.predict(titanicTest[predictors])
+    return predictions, titanicTest
+
+def generate_submission_file(predictions, data):
+    submission = pandas.DataFrame({
+        "PassengerId": data["PassengerId"],
+        "Survived": predictions
+    })
+    print(submission)
+    submission.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LogisticRegression1.csv", index_label=False,
+              index=False)
     return
 
 def main():
@@ -46,7 +71,8 @@ def main():
     titanic = split_title(titanic)
     predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
     alg = logistic_regression(titanic, predictors)
-    test_on_data(alg, predictors)
+    predictions, testData = predict_on_test_data(alg, predictors)
+    generate_submission_file(predictions, testData)
     return
 
 if __name__ == "__main__":
