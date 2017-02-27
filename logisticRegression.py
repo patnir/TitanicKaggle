@@ -1,7 +1,7 @@
 import pandas
 from sklearn.linear_model import LogisticRegression
 from sklearn.cross_validation import KFold
-
+import numpy as np
 
 def cleaning_up_data(titanic):
     titanic["Age"] = titanic["Age"].fillna(titanic["Age"].median())
@@ -38,14 +38,38 @@ def logistic_regression_with_cv(titanic, predictors):
     kf = KFold(titanic.shape[0], n_folds=5, random_state=1)
     predictions = []
     for train, test in kf:
-        # print test
         train_predictors = (titanic[predictors].iloc[train, :])
         train_target = titanic["Survived"].iloc[train]
         alg.fit(train_predictors, train_target)
         test_predictions = alg.predict(titanic[predictors].iloc[test, :])
-        # print titanic[predictors].iloc[test, :]
         predictions.append(test_predictions)
-    return predictions, alg
+
+    maxThreshold, maxAccuracy = getBestThresholdValue(titanic, predictions)
+
+    print(maxThreshold, maxAccuracy)
+
+    return alg, maxThreshold
+
+
+def testPredictions(titanic, predictions, threshold):
+    testPredictions = np.concatenate(predictions, axis=0)
+    testPredictions[testPredictions > threshold] = 1
+    testPredictions[testPredictions <= threshold] = 0
+    matches = sum([testPredictions == titanic["Survived"]])
+    accuracy = float(sum(matches)) / float(len(matches))
+    return accuracy
+
+def getBestThresholdValue(titanic, predictions):
+    threshold = 0.0
+    maxThreshold = 0.0
+    maxAccuracy = 0.0
+    for i in range(0, 100):
+        accuracy = testPredictions(titanic, predictions, threshold)
+        if accuracy > maxAccuracy:
+            maxAccuracy = accuracy
+            maxThreshold = threshold
+        threshold = i / 100.00
+    return maxThreshold, maxAccuracy
 
 
 def predict_on_test_data(alg, predictors):
@@ -61,7 +85,27 @@ def generate_submission_file(predictions, data):
         "Survived": predictions
     })
     print(submission)
-    submission.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LogisticRegression1.csv", index_label=False,
+    submission.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LogisticRegression2CV.csv", index_label=False,
+              index=False)
+    return
+
+def testOnDataSet(alg, maxThreshold, predictors):
+    titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
+    titanicTest = cleaning_up_data(titanicTest)
+    titanicTest = split_title(titanicTest)
+    predictions = alg.predict(titanicTest[predictors])
+    # print titanicTest[predictors].isnull().any()
+
+    predictions[predictions > maxThreshold] = 1
+    predictions[predictions <= maxThreshold] = 0
+    # print len(predictions)
+    predictions = list(predictions)
+    ids = range(892, 892 + len(predictions) + 1)
+    res = list(zip(ids, predictions))
+    # print res
+    df = pandas.DataFrame(data=res, columns=["PassengerId", "Survived"])
+    df["Survived"] = df["Survived"].astype(int)
+    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LogisticRegression3CV.csv", index_label=False,
               index=False)
     return
 
@@ -70,9 +114,13 @@ def main():
     titanic = cleaning_up_data(titanic)
     titanic = split_title(titanic)
     predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
-    alg = logistic_regression(titanic, predictors)
-    predictions, testData = predict_on_test_data(alg, predictors)
-    generate_submission_file(predictions, testData)
+    alg, maxThreshold = logistic_regression_with_cv(titanic, predictors)
+
+    #predictions, testData = predict_on_test_data(alg, predictors)
+    #generate_submission_file(predictions, testData)
+
+    testOnDataSet(alg, maxThreshold, predictors)
+
     return
 
 if __name__ == "__main__":
