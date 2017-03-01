@@ -26,17 +26,17 @@ def testPredictions(titanic, predictions, threshold):
     return accuracy
 
 def CleaningUpCode(titanic):
-    #print(titanic.describe())
+    # print(titanic.describe())
     titanic["Age"] = titanic["Age"].fillna(titanic["Age"].median())
     titanic["Fare"] = titanic["Fare"].fillna(titanic["Fare"].median())
     titanic.loc[titanic["Sex"] == "male", "Sex"] = 0
     titanic.loc[titanic["Sex"] == "female", "Sex"] = 1
-    #print titanic["Embarked"].unique()
+    # print titanic["Embarked"].unique()
     titanic["Embarked"] = titanic["Embarked"].fillna(0)
     titanic.loc[titanic["Embarked"] == "S", "Embarked"] = 0
     titanic.loc[titanic["Embarked"] == "C", "Embarked"] = 1
     titanic.loc[titanic["Embarked"] == "Q", "Embarked"] = 2
-    #print titanic.describe()
+    # print titanic.describe()
     return titanic
 
 def getBestThresholdValue(titanic, linearPredictionsOnTrain):
