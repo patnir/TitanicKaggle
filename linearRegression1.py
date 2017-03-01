@@ -1,7 +1,15 @@
 import pandas
-import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.cross_validation import KFold
+
+from sklearn import cross_validation
+import operator
+
+import numpy as np
+
+import matplotlib.pyplot as plt
+
+from sklearn.feature_selection import SelectKBest, f_classif
 
 def linearRegression(titanic, predictors):
     alg = LinearRegression()
@@ -90,6 +98,52 @@ def testOnDataSet(alg, maxThreshold, predictors):
               index=False)
     return
 
+def identify_best_predictors(titanic, predictors):
+
+    # Perform feature selection
+    selector = SelectKBest(f_classif, k=5)
+    selector.fit(titanic[predictors], titanic["Survived"])
+
+    # Get the raw p-values for each feature, and transform them from p-values into scores
+    scores = -np.log10(selector.pvalues_)
+
+    # Plot the scores
+    # Do you see how "Pclass", "Sex", "Title", and "Fare" are the best features?
+    plt.bar(range(len(predictors)), scores)
+    plt.xticks(range(len(predictors)), predictors, rotation='vertical')
+    plt.show()
+
+    # Pick only the four best features
+    predictors = ["Pclass", "Sex", "Fare", "Title"]
+
+    alg = LinearRegression()
+    # Compute the accuracy score for all the cross-validation folds; this is much simpler than what we did before
+    scores = cross_validation.cross_val_score(alg, titanic[predictors], titanic["Survived"], cv=3)
+
+    # Take the mean of the scores (because we have one for each fold)
+    print(scores.mean())
+
+def family_group(titanic):
+        family_id_mapping = {}
+
+        def get_family_id(row):
+            last_name = row["Name"].split(",")[0]
+            family_id = "{0}{1}".format(last_name, row["FamilySize"])
+            if family_id not in family_id_mapping:
+                if len(family_id_mapping) == 0:
+                    current_id = 1
+                else:
+                    current_id = (max(family_id_mapping.items(), key=operator.itemgetter(1))[1] + 1)
+                family_id_mapping[family_id] = current_id
+            return family_id_mapping[family_id]
+
+        family_ids = titanic.apply(get_family_id, axis=1)
+        family_ids[titanic["FamilySize"] < 3] = -1
+        # print(pandas.value_counts(family_ids))
+        titanic["FamilyId"] = family_ids
+        return titanic
+
+
 def main():
     titanic = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\train.csv")
     titanic = CleaningUpCode(titanic)
@@ -98,7 +152,18 @@ def main():
 
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title", "FamilySize", "NameLength"]
-    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp", "Title"]
+
+    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp", "Title", "NameLength"]
+
+    titanic = family_group(titanic)
+
+    #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "FamilySize", "Title", "FamilyId", "NameLength"]
+
+
+
+
+    identify_best_predictors(titanic, predictors)
+
     linearPredictionsOnTrain, alg = linearRegression(titanic, predictors)
 
     maxThreshold, maxAccuracy = getBestThresholdValue(titanic, linearPredictionsOnTrain)
