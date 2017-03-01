@@ -98,7 +98,7 @@ def main():
 
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title", "FamilySize", "NameLength"]
-    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp", "Title", "NameLength"]
+    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp", "Title"]
     linearPredictionsOnTrain, alg = linearRegression(titanic, predictors)
 
     maxThreshold, maxAccuracy = getBestThresholdValue(titanic, linearPredictionsOnTrain)
