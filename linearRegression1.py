@@ -153,7 +153,7 @@ def main():
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title", "FamilySize", "NameLength"]
 
-    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp", "Title", "NameLength"]
+    predictors = ["Pclass", "Sex", "Embarked", "FamilySize", "Title", "NameLength", "Fare"]
 
     titanic = family_group(titanic)
 
