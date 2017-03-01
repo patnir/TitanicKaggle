@@ -10,11 +10,12 @@ def get_data():
     return train, test
 
 
-def random_forrest(titanic, predictors):
+def random_forrest(titanic, predictors, test):
     alg = RandomForestClassifier(random_state=1, n_estimators=50, min_samples_split=4, min_samples_leaf=2)
     kf = cross_validation.KFold(titanic.shape[0], n_folds=3, random_state=1)
     scores = cross_validation.cross_val_score(alg, titanic[predictors], titanic["Survived"], cv=kf)
     print(scores.mean())
+    res = cross_validation.cross_val_predict(alg, )
     return
 
 
@@ -52,7 +53,7 @@ def main():
     train = clean_data(train)
     test = clean_data(test)
     predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title", "Parch", "NameLength"]
-    random_forrest(train, predictors)
+    random_forrest(train, predictors, test)
     return
 
 if __name__ == '__main__':

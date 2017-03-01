@@ -36,6 +36,9 @@ def CleaningUpCode(titanic):
     titanic.loc[titanic["Embarked"] == "S", "Embarked"] = 0
     titanic.loc[titanic["Embarked"] == "C", "Embarked"] = 1
     titanic.loc[titanic["Embarked"] == "Q", "Embarked"] = 2
+    titanic["FamilySize"] = titanic["SibSp"] + titanic["Parch"]
+
+    titanic["NameLength"] = titanic["Name"].apply(lambda x: len(x))
     # print titanic.describe()
     return titanic
 
@@ -94,7 +97,8 @@ def main():
     titanic = splitTitle(titanic)
 
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
-    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp"]
+    #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title", "FamilySize", "NameLength"]
+    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp", "Title", "NameLength"]
     linearPredictionsOnTrain, alg = linearRegression(titanic, predictors)
 
     maxThreshold, maxAccuracy = getBestThresholdValue(titanic, linearPredictionsOnTrain)
