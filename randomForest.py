@@ -39,6 +39,11 @@ def clean_data(titanic):
     for i in range(len(counts)):
         titanic.loc[titanic["Title"] == counts[i], "Title"] = i
     titanic["Title"] = titanic["Title"].fillna(0)
+
+    titanic["FamilySize"] = titanic["SibSp"] + titanic["Parch"]
+
+    titanic["NameLength"] = titanic["Name"].apply(lambda x: len(x))
+
     return titanic
 
 
@@ -46,7 +51,7 @@ def main():
     train, test = get_data()
     train = clean_data(train)
     test = clean_data(test)
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title"]
+    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title", "Parch", "NameLength"]
     random_forrest(train, predictors)
     return
 
