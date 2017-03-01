@@ -159,9 +159,6 @@ def main():
 
     #predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "FamilySize", "Title", "FamilyId", "NameLength"]
 
-
-
-
     identify_best_predictors(titanic, predictors)
 
     linearPredictionsOnTrain, alg = linearRegression(titanic, predictors)
