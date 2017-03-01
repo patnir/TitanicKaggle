@@ -10,13 +10,15 @@ def get_data():
     return train, test
 
 
-def random_forrest(titanic, predictors, test):
+def random_forest(titanic, predictors, test):
     alg = RandomForestClassifier(random_state=1, n_estimators=50, min_samples_split=4, min_samples_leaf=2)
     kf = cross_validation.KFold(titanic.shape[0], n_folds=3, random_state=1)
     scores = cross_validation.cross_val_score(alg, titanic[predictors], titanic["Survived"], cv=kf)
     print(scores.mean())
-    res = cross_validation.cross_val_predict(alg, )
-    return
+    #res = cross_validation.cross_val_predict(alg, )
+    alg.fit(titanic[predictors], titanic["Survived"])
+    predictions = alg.predict(test[predictors])
+    return predictions
 
 
 def clean_data(titanic):
@@ -40,20 +42,30 @@ def clean_data(titanic):
     for i in range(len(counts)):
         titanic.loc[titanic["Title"] == counts[i], "Title"] = i
     titanic["Title"] = titanic["Title"].fillna(0)
-
     titanic["FamilySize"] = titanic["SibSp"] + titanic["Parch"]
-
     titanic["NameLength"] = titanic["Name"].apply(lambda x: len(x))
-
     return titanic
 
+
+def generate_submission_file(predictions, data):
+    submission = pandas.DataFrame({
+        "PassengerId": data["PassengerId"],
+        "Survived": predictions
+    })
+    print(submission)
+    submission.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\RandomForest1.csv", index_label=False,
+              index=False)
+    return
 
 def main():
     train, test = get_data()
     train = clean_data(train)
     test = clean_data(test)
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "Title", "Parch", "NameLength"]
-    random_forrest(train, predictors, test)
+    predictors = ["Pclass", "Sex", "Age", "Embarked", "SibSp", "Title"]
+    predictions = random_forest(train, predictors, test)
+
+    generate_submission_file(predictions, test)
+
     return
 
 if __name__ == '__main__':
