@@ -90,7 +90,6 @@ def find_next_file(filename):
 
 
 def identify_best_predictors(titanic, predictors):
-
     # Perform feature selection
     selector = SelectKBest(f_classif, k=5)
     selector.fit(titanic[predictors], titanic["Survived"])
@@ -127,13 +126,14 @@ def main():
 
     predictors = ["Pclass", "Sex", "Embarked", "FamilySize", "Title", "NameLength", "Fare"]
 
-    predictions = random_forest(train, predictors, test)
+    # predictions = random_forest(train, predictors, test)
 
     identify_best_predictors(train, predictors)
 
-    generate_submission_file(predictions, test)
+    # generate_submission_file(predictions, test)
 
     return
+
 
 if __name__ == '__main__':
     main()
