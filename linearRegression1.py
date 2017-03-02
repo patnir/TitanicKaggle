@@ -1,14 +1,11 @@
 import pandas
 from sklearn.linear_model import LinearRegression
 from sklearn.cross_validation import KFold
-
+import glob
 from sklearn import cross_validation
 import operator
-
 import numpy as np
-
 import matplotlib.pyplot as plt
-
 from sklearn.feature_selection import SelectKBest, f_classif
 
 def linearRegression(titanic, predictors):
@@ -78,6 +75,13 @@ def splitTitle(titanic):
     titanic["Title"] = titanic["Title"].fillna(0)
     return titanic
 
+
+def find_next_file(filename):
+    files = [f for f in glob.glob(filename + "*")]
+    n = len(files) + 1
+    return filename + str(n) + ".csv"
+
+
 def testOnDataSet(alg, maxThreshold, predictors):
     titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
     titanicTest = CleaningUpCode(titanicTest)
@@ -94,7 +98,9 @@ def testOnDataSet(alg, maxThreshold, predictors):
     # print res
     df = pandas.DataFrame(data=res, columns=["PassengerId", "Survived"])
     df["Survived"] = df["Survived"].astype(int)
-    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression1.csv", index_label=False,
+    filen = "C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LinearRegression"
+    dirn = find_next_file(filen)
+    df.to_csv(dirn, index_label=False,
               index=False)
     return
 

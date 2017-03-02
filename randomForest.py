@@ -1,11 +1,9 @@
 from sklearn import cross_validation
 from sklearn.ensemble import RandomForestClassifier
 import operator
-
 import matplotlib.pyplot as plt
-
+import glob
 import pandas
-
 import numpy as np
 from sklearn.feature_selection import SelectKBest, f_classif
 
@@ -16,11 +14,14 @@ def get_data():
     return train, test
 
 
-def random_forest(titanic, predictors):
+def random_forest(titanic, predictors, test):
     alg = RandomForestClassifier(random_state=1, n_estimators=50, min_samples_split=4, min_samples_leaf=2)
     kf = cross_validation.KFold(titanic.shape[0], n_folds=3, random_state=1)
     scores = cross_validation.cross_val_score(alg, titanic[predictors], titanic["Survived"], cv=kf)
     print(scores.mean())
+    alg.fit(titanic[predictors], titanic["Survived"])
+    res = alg.predict(test[predictors])
+    return res
 
 
 def clean_data(titanic):
@@ -74,9 +75,18 @@ def generate_submission_file(predictions, data):
         "Survived": predictions
     })
     print(submission)
-    submission.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\RandomForest1.csv", index_label=False,
-              index=False)
+
+    filen = "C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\RandomForest"
+    dirn = find_next_file(filen)
+
+    submission.to_csv(dirn, index_label=False, index=False)
     return
+
+
+def find_next_file(filename):
+    files = [f for f in glob.glob(filename + "*")]
+    n = len(files) + 1
+    return filename + str(n) + ".csv"
 
 
 def identify_best_predictors(titanic, predictors):
@@ -111,15 +121,17 @@ def main():
     test = clean_data(test)
     train = family_group(train)
     test = family_group(test)
-    predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "FamilySize", "Title", "FamilyId",
-                  "NameLength"]
-    #predictions = random_forest(train, predictors)
 
+    # predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Fare", "Embarked", "FamilySize", "Title",
+    # "FamilyId", "NameLength"]
+
+    predictors = ["Pclass", "Sex", "Embarked", "FamilySize", "Title", "NameLength", "Fare"]
+
+    predictions = random_forest(train, predictors, test)
 
     identify_best_predictors(train, predictors)
 
-
-    # generate_submission_file(predictions, test)
+    generate_submission_file(predictions, test)
 
     return
 

@@ -2,6 +2,7 @@ import pandas
 from sklearn.linear_model import LogisticRegression
 from sklearn.cross_validation import KFold
 import numpy as np
+import glob
 
 def cleaning_up_data(titanic):
     titanic["Age"] = titanic["Age"].fillna(titanic["Age"].median())
@@ -89,6 +90,15 @@ def generate_submission_file(predictions, data):
               index=False)
     return
 
+
+def find_next_file(filename):
+    files = [f for f in glob.glob(filename + "*")]
+    # numbers = [int(re.findall(r"[\d]+", i)[-1]) for i in files]
+    # n = max(numbers) + 1
+    n = len(files) + 1
+    return filename + str(n) + ".csv"
+
+
 def testOnDataSet(alg, maxThreshold, predictors):
     titanicTest = pandas.read_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\test.csv")
     titanicTest = cleaning_up_data(titanicTest)
@@ -105,7 +115,9 @@ def testOnDataSet(alg, maxThreshold, predictors):
     # print res
     df = pandas.DataFrame(data=res, columns=["PassengerId", "Survived"])
     df["Survived"] = df["Survived"].astype(int)
-    df.to_csv("C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LogisticRegression3CV.csv", index_label=False,
+    filen = "C:\Users\SUNITA\Desktop\HackBaby!\TitanicKaggle\\Submissions\\LogisticRegression"
+    dirn = find_next_file(filen)
+    df.to_csv(dirn, index_label=False,
               index=False)
     return
 
@@ -116,8 +128,9 @@ def main():
     predictors = ["Pclass", "Sex", "Age", "SibSp", "Parch", "Embarked", "Title"]
     alg, maxThreshold = logistic_regression_with_cv(titanic, predictors)
 
-    #predictions, testData = predict_on_test_data(alg, predictors)
-    #generate_submission_file(predictions, testData)
+    # predictions, testData = predict_on_test_data(alg, predictors)
+
+    # generate_submission_file(predictions, testData)
 
     testOnDataSet(alg, maxThreshold, predictors)
 

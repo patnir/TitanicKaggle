@@ -4,8 +4,9 @@ import re
 
 def find_next_file(filename):
     files = [f for f in glob.glob(filename + "*")]
-    numbers = [int(re.findall(r"[\d]+", i)[-1]) for i in files]
-    n = max(numbers) + 1
+    # numbers = [int(re.findall(r"[\d]+", i)[-1]) for i in files]
+    # n = max(numbers) + 1
+    n = len(files) + 1
     return filename + str(n) + ".csv"
 
 
