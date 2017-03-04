@@ -60,6 +60,7 @@ def store_test_train(train, test):
     train.to_csv(trainfile, index_label=False, index=False)
     test.to_csv(testfile, index_label=False, index=False)
 
+
 def main():
     train, test = get_data()
     train = clean_data(train)

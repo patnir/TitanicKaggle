@@ -1,0 +1,17 @@
+There's still more work you can do in feature engineering:
+
+Try using features related to the cabins.
+See if any family size features might help. Do the number of women in a family make the entire family more likely to survive?
+Does the national origin of the passenger's name have anything to do with survival?
+There's also a lot more we can do on the algorithm side:
+
+Try the random forest classifier in the ensemble.
+A support vector machine might work well with this data.
+We could try neural networks.
+Boosting with a different base classifier might work better.
+And with ensembling methods:
+
+Could majority voting be a better ensembling method than averaging probabilities?
+This data set is very easy to overfit on; there isn't a lot of data, so you'll be grinding for small accuracy gains. You could also try a different Kaggle competition that has more data and richer features.
+
+We hope you enjoyed this tutorial, and good luck with the machine learning competitions!
